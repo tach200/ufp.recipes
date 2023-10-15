@@ -7,6 +7,8 @@ require (
 	github.com/jackskj/carta v0.2.0
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/lib/pq v1.6.0
+	github.com/nullism/bqb v1.6.2
+	github.com/rs/cors v1.10.1
 )
 
 require (

@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	_ "github.com/lib/pq"
+	"github.com/rs/cors"
 
 	"github.com/gorilla/mux"
 	"github.com/tach200/ufp.recipes/internal/db"
@@ -34,12 +35,23 @@ func init() {
 func main() {
 	handlers := newHandlers(dbDriver, dbOpts)
 
-	r := mux.NewRouter()
+	router := mux.NewRouter()
 
-	r.HandleFunc("/recipes", handlers.GetRecipes).Methods("GET")
-	r.HandleFunc("/recipe/{id}", handlers.GetRecipe).Methods("GET")
+	// Create a CORS handler with the desired options
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:3000"}, // Replace with your React app's domain
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
+		AllowedHeaders: []string{"Content-Type", "Authorization"},
+	})
 
-	http.Handle("/", r)
+	handler := c.Handler(router)
+
+	http.Handle("/", handler)
+
+	router.HandleFunc("/recipes", handlers.GetRecipes).Methods("GET")
+	router.HandleFunc("/recipe/{id}", handlers.GetRecipe).Methods("GET")
+	router.HandleFunc("/recipe/{id}/products", handlers.GetRecipeProducts).Methods("GET")
+	router.HandleFunc("/test", handlers.Test).Methods("GET")
 
 	fmt.Printf("INFO: starting recipe service on port %s\n", port)
 	http.ListenAndServe(port, nil)
@@ -56,7 +68,7 @@ func newHandlers(dbDriver, dbOpts string) handlers.Handlers {
 		log.Fatal(err)
 	}
 
-	fmt.Print("connected to db\n")
+	fmt.Print("INFO: connected to db\n")
 
 	handlers := &handlers.Handlers{
 		DB: db,

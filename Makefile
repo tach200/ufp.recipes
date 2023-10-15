@@ -10,7 +10,8 @@ build-local-arm64:
 
 db-seed:
 	docker exec -i ufprecipes-db-1 psql -U myuser -d mydb < internal/db/seed/tables.sql && \
-	docker exec -i ufprecipes-db-1 psql -U myuser -d mydb < internal/db/seed/recipes.sql
+	docker exec -i ufprecipes-db-1 psql -U myuser -d mydb < internal/db/seed/recipes.sql && \
+	docker exec -i ufprecipes-db-1 psql -U myuser -d mydb < internal/db/seed/products.sql
 
 db-query:
 	docker exec -it ufprecipes-db-1 psql -h localhost -U myuser -d mydb -p 5432
